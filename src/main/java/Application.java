@@ -1,3 +1,5 @@
+import Utils.Parsers;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,13 +17,9 @@ public class Application {
             fis = new FileInputStream("configuration.properties");
             property.load(fis);
             String path = property.getProperty("path");
-            long beforeTime = System.currentTimeMillis();
-            long count = Files.lines(Paths.get(path)).distinct().count();
-            long afterTime = System.currentTimeMillis();
-            System.out.println("Количество строк = "+count);
-            System.out.println("Время исполнения = "+(afterTime - beforeTime) + " ms.");
-        } catch (IOException e) {
-            e.printStackTrace();
+            Parsers.parsingСycle(path);
+        }catch (Throwable throwable){
+            throwable.printStackTrace();
         }
 
     }
