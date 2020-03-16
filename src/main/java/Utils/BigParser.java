@@ -58,7 +58,7 @@ public class BigParser {
         return numberFiles;
     }
 
-    public static void CompareAndGetUniqueStringFromFiles(long countFiles){
+    public static void CompareAndGetUniqueStringFromFiles(long countFiles, long countRowInOneFile){
 
         try{
             Stream<String> resultStream = null;
@@ -84,7 +84,7 @@ public class BigParser {
                     long countIter = 0;
                     for(String oneIppr : arrayListIpAddr) {
 
-                        if(countRowResult > 1){
+                        if(countRowResult > countRowInOneFile){
                             if(countIter <= countRowResult / 2){
                                 iWriter.write(oneIppr);
                                 iWriter.newLine();
@@ -100,29 +100,17 @@ public class BigParser {
                         }
 
                     }
+
                     iWriter.flush();
                     jWriter.flush();
                     iWriter.close();
                     jWriter.close();
-//                    if(countRowResult==1){
-//                        iWriter.flush();
-//                        iWriter.close();
-//                        iWriter.close();
-//                        jWriter.close();
-//                    }else{
-//                        iWriter.flush();
-//                        jWriter.flush();
-//                        iWriter.close();
-//                        jWriter.close();
-//                    }
-//                    if(i==countFiles){
-//                        resultStream.close();
-//                        iWriter.close();
-//                        jWriter.close();
-//                        iStream.close();
-//                        jStream.close();
-//                    }
-//                    resultStream = null;
+                    if(countRowResult < countRowInOneFile){
+                        File file = new File("splitedFiles/"+j+"split.txt");
+                        if(file.exists()){
+                            file.delete();
+                        }
+                    }
 
                     iStream = Files.lines(Paths.get("splitedFiles/"+i+"split.txt"));
                 }

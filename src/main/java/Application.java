@@ -24,7 +24,7 @@ public class Application {
             String path = property.getProperty("path");
 
             long countPath = BigParser.SplitBigFile(path);
-            BigParser.CompareAndGetUniqueStringFromFiles(countPath);
+            BigParser.CompareAndGetUniqueStringFromFiles(countPath,5);
             long countFiles = BigParser.renamerFiles();
             BigParser.resultCountDistinctRows(countFiles);
 //            Parsers.parsingСycle(path);
