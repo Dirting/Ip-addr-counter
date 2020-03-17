@@ -5,6 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * Дополнительные решения, если имеется ОЧЕНЬ много не физической памяти
+ */
 public class Parsers {
 
     /**
@@ -25,7 +28,7 @@ public class Parsers {
     }
 
     /**
-     * Основное решение.
+     * Дополнительное решение.
      * Так же считываем Stream и кладём уникальные значения в TreeMap, но внутри дополнительная проверка и форсированный вызов сборщика мусора
      * @param path String путь до файла
      */
@@ -40,13 +43,6 @@ public class Parsers {
             Files.lines(Paths.get(path)).forEach(ipAddr -> {
                 if(!resMap.containsKey(ipAddr)){
                     resMap.put(ipAddr,null);
-                    //Решения без форсированного вызова сборщика мусора не получилось выявить
-                    //возможно скорость увеличится если вызывать его реже, но это пока самый оптимальный вариант
-                    //расходует примерно 1.5 гб памяти
-                    //Время:
-                    //TreeMap =
-                    //HashMap =
-                    System.gc();
                 }
 
             });
