@@ -27,8 +27,22 @@ public class Application {
                 }else{
                     long beforeTime = System.currentTimeMillis();
                     long countPath = BigParser.SplitBigFile(path,savePath,countRowForFile);
-                    BigParser.CompareAndGetUniqueStringFromFiles(countPath,countRowForFile,savePath);
-                    BigParser.resultCountDistinctRows(savePath);
+
+                    //Проверка на количество файлов, если файл один, то обрабтка результата ненужна
+                    //т.к результат выводится сразу в методе CompareAndGetUniqueStringFromFiles
+                    //p.s switch не получилось реализовать потому что countPath имеет тип long
+                    if(countPath>1){
+                        BigParser.CompareAndGetUniqueStringFromFiles(countPath,countRowForFile,savePath);
+                        BigParser.resultCountDistinctRows(savePath);
+                    }else{
+                        if(countPath>0){
+                            BigParser.CompareAndGetUniqueStringFromFiles(countPath,countRowForFile,savePath);
+                        }else {
+                            System.out.println("Количество строк = 0");
+                        }
+
+                    }
+
                     long afterTime = System.currentTimeMillis();
                     System.out.println("Время исполнения = "+(afterTime - beforeTime) + " ms.");
 

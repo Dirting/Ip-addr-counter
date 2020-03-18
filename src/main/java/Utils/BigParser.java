@@ -70,80 +70,92 @@ public class BigParser {
     public static void CompareAndGetUniqueStringFromFiles(long countFiles, long countRowInOneFile, String pathToSaveFile){
 
         try{
-            Stream<String> resultStream = null;
-            //Первый цикл по всем файлам где i - это номер файла
-            for(long i = 0; i<countFiles; i++){
-                //Считываем первый файл в поток
-                Stream<String> iStream = Files.lines(Paths.get(pathToSaveFile+File.separatorChar+i+"split.txt"));
-                //Второй цикл по всем файлам где j - это номер файла
-                for(long j = 0; j<countFiles; j++){
-                    //Пропускаем в тот момент когда оба циклы останавливаеются на одном файле
-                    if(i!=j){
+            //Проверяем на количество файлов
+            if(countFiles>1){
+                Stream<String> resultStream = null;
+                //Первый цикл по всем файлам где i - это номер файла
+                for(long i = 0; i<countFiles; i++){
+                    //Считываем первый файл в поток
+                    Stream<String> iStream = Files.lines(Paths.get(pathToSaveFile+File.separatorChar+i+"split.txt"));
+                    //Второй цикл по всем файлам где j - это номер файла
+                    for(long j = 0; j<countFiles; j++){
+                        //Пропускаем в тот момент когда оба циклы останавливаеются на одном файле
+                        if(i!=j){
 
-                        //Считываем второй файл в поток
-                        Stream<String> jStream = Files.lines(Paths.get(pathToSaveFile+File.separatorChar+j+"split.txt"));
+                            //Считываем второй файл в поток
+                            Stream<String> jStream = Files.lines(Paths.get(pathToSaveFile+File.separatorChar+j+"split.txt"));
 
-                        //Объединяем потоки и оставляем только одинаковые значения
-                        resultStream = Stream.concat(iStream,jStream).distinct();
+                            //Объединяем потоки и оставляем только одинаковые значения
+                            resultStream = Stream.concat(iStream,jStream).distinct();
 
-                        //Превращаем результирующий поток в ArrayList
-                        ArrayList<String> arrayListIpAddr = getArrayListFromStream(resultStream);
+                            //Превращаем результирующий поток в ArrayList
+                            ArrayList<String> arrayListIpAddr = getArrayListFromStream(resultStream);
 
-                        //Обнуляем потоки
-                        iStream = null;
-                        jStream = null;
+                            //Обнуляем потоки
+                            iStream = null;
+                            jStream = null;
 
-                        //Удаляем первичные файлы для экономии места
-                        File iFile = new File(pathToSaveFile+File.separatorChar+i+"split.txt");
-                        File jFile = new File(pathToSaveFile+File.separatorChar+j+"split.txt");
+                            //Удаляем первичные файлы для экономии места
+                            File iFile = new File(pathToSaveFile+File.separatorChar+i+"split.txt");
+                            File jFile = new File(pathToSaveFile+File.separatorChar+j+"split.txt");
 
-                        if(iFile.exists()){
-                            iFile.delete();
-                        }
-                        if(jFile.exists()){
-                            jFile.delete();
-                        }
-
-                        //Получаем итоговый размер результирующего списка
-                        long countRowResult = arrayListIpAddr.size();
-
-                        BufferedWriter iWriter = new BufferedWriter(new FileWriter(pathToSaveFile+File.separatorChar+i+"split.txt"));
-                        BufferedWriter jWriter = new BufferedWriter(new FileWriter(pathToSaveFile+File.separatorChar+j+"split.txt"));
-
-                        long countIter = 0;
-                        //Цикл по результирующему списку, если строк в итоге меньше или равно количеству в одном файле
-                        //то записываем всё в один файл, иначе до середины записываем в один файл, а после в другой
-                        for(String oneIppr : arrayListIpAddr) {
-
-                            if(countRowResult >= countRowInOneFile){
-                                if(countIter <= countRowResult / 2){
-                                    iWriter.write(oneIppr);
-                                    iWriter.newLine();
-                                    countIter++;
-                                }else{
-                                    jWriter.write(oneIppr);
-                                    jWriter.newLine();
-                                    countIter++;
-                                }
-
-                            }else{
-                                iWriter.write(oneIppr);
-                                iWriter.newLine();
+                            if(iFile.exists()){
+                                iFile.delete();
+                            }
+                            if(jFile.exists()){
+                                jFile.delete();
                             }
 
+                            //Получаем итоговый размер результирующего списка
+                            long countRowResult = arrayListIpAddr.size();
+
+                            BufferedWriter iWriter = new BufferedWriter(new FileWriter(pathToSaveFile+File.separatorChar+i+"split.txt"));
+                            BufferedWriter jWriter = new BufferedWriter(new FileWriter(pathToSaveFile+File.separatorChar+j+"split.txt"));
+
+                            long countIter = 0;
+                            //Цикл по результирующему списку, если строк в итоге меньше или равно количеству в одном файле
+                            //то записываем всё в один файл, иначе до середины записываем в один файл, а после в другой
+                            for(String oneIppr : arrayListIpAddr) {
+
+                                if(countRowResult >= countRowInOneFile){
+                                    if(countIter <= countRowResult / 2){
+                                        iWriter.write(oneIppr);
+                                        iWriter.newLine();
+                                        countIter++;
+                                    }else{
+                                        jWriter.write(oneIppr);
+                                        jWriter.newLine();
+                                        countIter++;
+                                    }
+
+                                }else{
+                                    iWriter.write(oneIppr);
+                                    iWriter.newLine();
+                                }
+
+                            }
+
+                            iWriter.flush();
+                            jWriter.flush();
+                            iWriter.close();
+                            jWriter.close();
+
+                            //Т.к файлы изменились нам нужно переопределить поток
+                            iStream = Files.lines(Paths.get(pathToSaveFile+File.separatorChar+i+"split.txt"));
                         }
 
-                        iWriter.flush();
-                        jWriter.flush();
-                        iWriter.close();
-                        jWriter.close();
-
-                        //Т.к файлы изменились нам нужно переопределить поток
-                        iStream = Files.lines(Paths.get(pathToSaveFile+File.separatorChar+i+"split.txt"));
                     }
-
                 }
+            }else{
+                //если файл всего один, то сразу обрабатываем и выводим количество
+                Stream<String> streamIpAddr = Files.lines(Paths.get(pathToSaveFile+File.separatorChar+0+"split.txt")).distinct();
+                File file = new File(pathToSaveFile+File.separatorChar+0+"split.txt");
+                if(file.exists()){
+                    file.delete();
+                }
+                System.out.println("Количество строк = "+streamIpAddr.count());
             }
+
 
 
         }catch (Throwable throwable){
