@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +39,7 @@ public class BigParser {
             BufferedWriter outputWriter = new BufferedWriter(new FileWriter(pathToSaveFile+File.separatorChar+numberFiles+"split.txt"));
 
             String line;
+            TreeSet<String> result = new TreeSet<>();
             while((line = reader.readLine()) != null) {
                 outputWriter.write(line);
                 outputWriter.newLine();
@@ -60,6 +63,8 @@ public class BigParser {
         }
         return fileCount;
     }
+
+
 
     /**
      * Метод сравнивающий каждый файл с каждым и оставляющий только уникальные значения
